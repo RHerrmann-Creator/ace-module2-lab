@@ -73,7 +73,7 @@ async function handleXmlUpload ({ file }: Request, res: Response, next: NextFunc
     if (((file?.buffer) != null) && utils.isChallengeEnabled(challenges.deprecatedInterfaceChallenge)) { // XXE attacks in Docker/Heroku containers regularly cause "segfault" crashes
       const data = file.buffer.toString()
       try {
-        if (/<\s*!\s*(?:ENTITY|DOCTYPE)[^>]*\b(?:SYSTEM|PUBLIC)\b/i.test(data) || /(?:<\s*xi:include\b|xmlns:xi\s*=)/i.test(data)) {
+        if (/<\s*!\s*(?:ENTITY|DOCTYPE)[^>]*\b(?:SYSTEM|PUBLIC)\b/i.test(data) || /(?:<\s*(?:[a-zA-Z0-9_.-]+(?:\s*:\s*)?)?include\b|\bxinclude\b)/i.test(data)) {
           throw new Error('XML external entities are not allowed')
         }
         const xmlString = await parseXmlString(data)
